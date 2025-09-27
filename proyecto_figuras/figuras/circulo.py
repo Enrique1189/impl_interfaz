@@ -16,3 +16,4 @@ class Circulo(Figura):
 
     def obtener_nombre(self) -> str:
         return "Círculo"
+    
