@@ -15,7 +15,7 @@ ventana.title("Calculadora de Figuras Geométricas")
 ventana.geometry("650x350")
 ventana.config(bg="#f0f0f0")
 
-titulo = tk.Label(ventana, text="Calculadora de Figuras Geométricas", font=("Arial",20,"bold"), bg="#f0f0f0")
+titulo = tk.Label(ventana, text="Cuadrado", font=("Arial",20,"bold"), bg="#f0f0f0")
 titulo.pack(pady=15)
 
 entrada_frame = tk.Frame(ventana, bg="#f0f0f0")
