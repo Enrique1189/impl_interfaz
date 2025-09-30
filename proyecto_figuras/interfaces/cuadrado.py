@@ -9,3 +9,4 @@ class Cuadrado(Figura):
 
     def perimetro(self) -> float:
         return 4 * self.lado
+
