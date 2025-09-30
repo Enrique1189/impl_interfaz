@@ -1,6 +1,6 @@
 # figuras/circulo.py
 import math
-from interfaces.figura import Figura
+from proyecto_figuras.figuras.figura import Figura
 
 class Circulo(Figura):
     def __init__(self, radio: float):
