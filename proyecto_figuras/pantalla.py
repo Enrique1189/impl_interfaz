@@ -1,76 +1,22 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import math
 
-# =========================
-# CLASES DE FIGURAS
-# =========================
-class Figura:
-    def area(self): raise NotImplementedError
-    def perimetro(self): raise NotImplementedError
+# Importar todas las figuras
+from figuras.cuadrado import Cuadrado
+from figuras.rectangulo import Rectangulo
+from figuras.triangulo import Triangulo
+from figuras.trapecio import Trapecio
+from figuras.pentagono import Pentagono
+from figuras.hexagono import Hexagono
+from figuras.heptagono import Heptagono
+from figuras.octagono import Octagono
+from figuras.rombo import Rombo
+from figuras.circulo import Circulo
 
-class Cuadrado(Figura):
-    def __init__(self, lado): self.lado = lado
-    def area(self): return self.lado ** 2
-    def perimetro(self): return 4 * self.lado
-
-class Rectangulo(Figura):
-    def __init__(self, base, altura): self.base, self.altura = base, altura
-    def area(self): return self.base * self.altura
-    def perimetro(self): return 2 * (self.base + self.altura)
-
-class Triangulo(Figura):
-    def __init__(self, base, altura, lado1, lado2, lado3):
-        self.base, self.altura = base, altura
-        self.lado1, self.lado2, self.lado3 = lado1, lado2, lado3
-    def area(self): return (self.base * self.altura) / 2
-    def perimetro(self): return self.lado1 + self.lado2 + self.lado3
-
-class Trapecio(Figura):
-    def __init__(self, base_mayor, base_menor, altura, lado1, lado2):
-        self.base_mayor, self.base_menor, self.altura = base_mayor, base_menor, altura
-        self.lado1, self.lado2 = lado1, lado2
-    def area(self): return ((self.base_mayor + self.base_menor) * self.altura) / 2
-    def perimetro(self): return self.base_mayor + self.base_menor + self.lado1 + self.lado2
-
-class Pentagono(Figura):
-    def __init__(self, lado, apotema): self.lado, self.apotema = lado, apotema
-    def area(self): return (5 * self.lado * self.apotema) / 2
-    def perimetro(self): return 5 * self.lado
-
-class Hexagono(Figura):
-    def __init__(self, lado, apotema): self.lado, self.apotema = lado, apotema
-    def area(self): return (6 * self.lado * self.apotema) / 2
-    def perimetro(self): return 6 * self.lado
-
-class Heptagono(Figura):
-    def __init__(self, lado, apotema): self.lado, self.apotema = lado, apotema
-    def area(self): return (7 * self.lado * self.apotema) / 2
-    def perimetro(self): return 7 * self.lado
-
-class Octagono(Figura):
-    def __init__(self, lado, apotema): self.lado, self.apotema = lado, apotema
-    def area(self): return (8 * self.lado * self.apotema) / 2
-    def perimetro(self): return 8 * self.lado
-
-class Rombo(Figura):
-    def __init__(self, diagonal_mayor, diagonal_menor, lado):
-        self.diagonal_mayor, self.diagonal_menor, self.lado = diagonal_mayor, diagonal_menor, lado
-    def area(self): return (self.diagonal_mayor * self.diagonal_menor) / 2
-    def perimetro(self): return 4 * self.lado
-
-class Circulo(Figura):
-    def __init__(self, radio): self.radio = radio
-    def area(self): return math.pi * self.radio ** 2
-    def perimetro(self): return 2 * math.pi * self.radio
-
-# =========================
-# INTERFAZ
-# =========================
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("Menú de Figuras Geométricas")
+        self.root.title("Figuras Geométricas")
 
         ttk.Label(root, text="Selecciona una figura:").pack(pady=10)
 
@@ -109,6 +55,7 @@ class App:
         def calcular():
             try:
                 valores = {k: float(v.get()) for k, v in entradas.items()}
+
                 if figura == "Cuadrado": f = Cuadrado(valores["lado"])
                 elif figura == "Rectángulo": f = Rectangulo(valores["base"], valores["altura"])
                 elif figura == "Triángulo": f = Triangulo(valores["base"], valores["altura"], valores["lado1"], valores["lado2"], valores["lado3"])
@@ -120,6 +67,7 @@ class App:
                 elif figura == "Rombo": f = Rombo(valores["diagonal_mayor"], valores["diagonal_menor"], valores["lado"])
                 elif figura == "Círculo": f = Circulo(valores["radio"])
                 else: return
+
                 resultado.config(text=f"Área: {f.area():.2f}\nPerímetro: {f.perimetro():.2f}")
             except ValueError:
                 messagebox.showerror("Error", "Debes ingresar valores numéricos")
@@ -127,9 +75,6 @@ class App:
         ttk.Button(win, text="Calcular", command=calcular).pack(pady=5)
         ttk.Button(win, text="Cerrar", command=win.destroy).pack(pady=5)
 
-# =========================
-# MAIN
-# =========================
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
