@@ -1,27 +1,25 @@
 import math
 from interfaces.figura import Figura # Asumiendo la existencia de esta interfaz/clase base
 
-class Trapecio(Figura):
-    """Representa un trapecio con dos bases paralelas, altura y lados no paralelos."""
-    def __init__(self, base_mayor: float, base_menor: float, altura: float, lado1: float, lado2: float):
-        if base_mayor <= 0 or base_menor <= 0 or altura <= 0 or lado1 <= 0 or lado2 <= 0:
-            raise ValueError("Todas las dimensiones deben ser valores positivos.")
-        if base_menor >= base_mayor:
-             raise ValueError("La base mayor debe ser más grande que la base menor.")
-        self.base_mayor = base_mayor
-        self.base_menor = base_menor
-        self.altura = altura
-        self.lado1 = lado1 # Lado no paralelo 1
-        self.lado2 = lado2 # Lado no paralelo 2
+class TrianguloRectangulo(Figura):
+    """Representa un triángulo rectángulo con base (cateto1) y altura (cateto2) dadas."""
+    def __init__(self, cateto1: float, cateto2: float):
+        if cateto1 <= 0 or cateto2 <= 0:
+            raise ValueError("Los catetos deben ser valores positivos.")
+        self.cateto1 = cateto1
+        self.cateto2 = cateto2
+        # Calcula la hipotenusa usando el Teorema de Pitágoras: h = sqrt(a^2 + b^2)
+        self.hipotenusa = math.sqrt(cateto1**2 + cateto2**2)
 
     def calcular_perimetro(self) -> float:
-        """Calcula el perímetro (suma de todos los lados)."""
-        return self.base_mayor + self.base_menor + self.lado1 + self.lado2
+        """Calcula el perímetro (cateto1 + cateto2 + hipotenusa)."""
+        return self.cateto1 + self.cateto2 + self.hipotenusa
 
     def calcular_area(self) -> float:
-        """Calcula el área ((base_mayor + base_menor) / 2 * altura)."""
-        return ((self.base_mayor + self.base_menor) / 2) * self.altura
+        """Calcula el área ((base * altura) / 2)."""
+        # Los catetos actúan como base y altura
+        return (self.cateto1 * self.cateto2) / 2
 
     def obtener_nombre(self) -> str:
         """Devuelve el nombre de la figura."""
-        return "Trapecio"
+        return "Triángulo Rectángulo"

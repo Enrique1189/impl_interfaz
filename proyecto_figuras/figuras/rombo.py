@@ -1,23 +1,27 @@
 import math
 from interfaces.figura import Figura # Asumiendo la existencia de esta interfaz/clase base
 
-class Rombo(Figura):
-    """Representa un rombo con un lado y las longitudes de sus diagonales dadas."""
-    def __init__(self, lado: float, diagonal_mayor: float, diagonal_menor: float):
-        if lado <= 0 or diagonal_mayor <= 0 or diagonal_menor <= 0:
-            raise ValueError("El lado y las diagonales deben ser valores positivos.")
-        self.lado = lado
-        self.diagonal_mayor = diagonal_mayor
-        self.diagonal_menor = diagonal_menor
+class Trapecio(Figura):
+    """Representa un trapecio con dos bases paralelas, altura y lados no paralelos."""
+    def __init__(self, base_mayor: float, base_menor: float, altura: float, lado1: float, lado2: float):
+        if base_mayor <= 0 or base_menor <= 0 or altura <= 0 or lado1 <= 0 or lado2 <= 0:
+            raise ValueError("Todas las dimensiones deben ser valores positivos.")
+        if base_menor >= base_mayor:
+             raise ValueError("La base mayor debe ser más grande que la base menor.")
+        self.base_mayor = base_mayor
+        self.base_menor = base_menor
+        self.altura = altura
+        self.lado1 = lado1 # Lado no paralelo 1
+        self.lado2 = lado2 # Lado no paralelo 2
 
     def calcular_perimetro(self) -> float:
-        """Calcula el perímetro (4 * lado)."""
-        return 4 * self.lado
+        """Calcula el perímetro (suma de todos los lados)."""
+        return self.base_mayor + self.base_menor + self.lado1 + self.lado2
 
     def calcular_area(self) -> float:
-        """Calcula el área ((Diagonal Mayor * Diagonal Menor) / 2)."""
-        return (self.diagonal_mayor * self.diagonal_menor) / 2
+        """Calcula el área ((base_mayor + base_menor) / 2 * altura)."""
+        return ((self.base_mayor + self.base_menor) / 2) * self.altura
 
     def obtener_nombre(self) -> str:
         """Devuelve el nombre de la figura."""
-        return "Rombo"
+        return "Trapecio"
