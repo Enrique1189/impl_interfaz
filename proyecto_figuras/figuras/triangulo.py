@@ -1,14 +1,15 @@
+import math
 from interfaces.figura import Figura
 
-class Cuadrado(Figura):
+class Triangulo(Figura):
     def __init__(self, lado):
         self.lado = lado
 
     def calcular_area(self):
-        return self.lado ** 2
+        return (math.sqrt(3) / 4) * self.lado ** 2
 
     def calcular_perimetro(self):
-        return 4 * self.lado
+        return 3 * self.lado
 
     def obtener_nombre(self):
-        return "Cuadrado"
+        return "Triángulo Equilátero"

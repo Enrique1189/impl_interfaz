@@ -1,209 +1,180 @@
-#Aqui desarrollara la implementacion de las clases de figuras
-#En una interfaz grafica en tkinder
-
-
-
 import tkinter as tk
 from tkinter import ttk, messagebox
-import math
 
-# Definimos las clases de figuras (simplificadas sin herencia aquí para hacerlo autónomo)
-class Circulo:
-    def __init__(self, radio):
-        if radio <= 0:
-            raise ValueError("El radio debe ser positivo")
-        self.radio = radio
-    def calcular_perimetro(self):
-        return 2 * math.pi * self.radio
-    def calcular_area(self):
-        return math.pi * self.radio ** 2
-    def obtener_nombre(self):
-        return "Círculo"
+# Importar clases de la carpeta figuras
+from figuras.circulo import Circulo
+from figuras.cuadrado import Cuadrado
+from figuras.rectangulo import Rectangulo
+from figuras.triangulo import Triangulo
+from figuras.triangulo_rectangulo import TrianguloRectangulo
+from figuras.rombo import Rombo
+from figuras.trapecio import Trapecio
+from figuras.pentagono import Pentagono
+from figuras.elipse import Elipse
 
-class Cuadrado:
-    def __init__(self, lado):
-        if lado <= 0:
-            raise ValueError("El lado debe ser positivo")
-        self.lado = lado
-    def calcular_perimetro(self):
-        return 4 * self.lado
-    def calcular_area(self):
-        return self.lado ** 2
-    def obtener_nombre(self):
-        return "Cuadrado"
 
-class Elipse:
-    def __init__(self, radio_mayor, radio_menor):
-        if radio_mayor <= 0 or radio_menor <= 0:
-            raise ValueError("Los radios deben ser positivos")
-        self.radio_mayor = radio_mayor
-        self.radio_menor = radio_menor
-    def calcular_perimetro(self):
-        h = ((self.radio_mayor - self.radio_menor)**2) / ((self.radio_mayor + self.radio_menor)**2)
-        return math.pi * (self.radio_mayor + self.radio_menor) * (1 + (3*h)/(10 + math.sqrt(4 - 3*h)))
-    def calcular_area(self):
-        return math.pi * self.radio_mayor * self.radio_menor
-    def obtener_nombre(self):
-        return "Elipse"
-
-class Paralelogramo:
-    def __init__(self, base, altura):
-        if base <= 0 or altura <= 0:
-            raise ValueError("Base y altura deben ser positivos")
-        self.base = base
-        self.altura = altura
-    def calcular_perimetro(self):
-        return 2 * (self.base + self.altura)
-    def calcular_area(self):
-        return self.base * self.altura
-    def obtener_nombre(self):
-        return "Paralelogramo"
-
-class Rectangulo:
-    def __init__(self, base, altura):
-        if base <= 0 or altura <= 0:
-            raise ValueError("Base y altura deben ser positivos")
-        self.base = base
-        self.altura = altura
-    def calcular_perimetro(self):
-        return 2 * (self.base + self.altura)
-    def calcular_area(self):
-        return self.base * self.altura
-    def obtener_nombre(self):
-        return "Rectángulo"
-
-class Rombo:
-    def __init__(self, diagonal_mayor, diagonal_menor):
-        if diagonal_mayor <= 0 or diagonal_menor <= 0:
-            raise ValueError("Las diagonales deben ser positivas")
-        self.diagonal_mayor = diagonal_mayor
-        self.diagonal_menor = diagonal_menor
-    def calcular_perimetro(self):
-        lado = ((self.diagonal_mayor/2)**2 + (self.diagonal_menor/2)**2)**0.5
-        return 4 * lado
-    def calcular_area(self):
-        return (self.diagonal_mayor * self.diagonal_menor)/2
-    def obtener_nombre(self):
-        return "Rombo"
-
-class Trapecio:
-    def __init__(self, base_mayor, base_menor, altura):
-        if base_mayor <= 0 or base_menor <= 0 or altura <= 0:
-            raise ValueError("Las dimensiones deben ser positivas")
-        self.base_mayor = base_mayor
-        self.base_menor = base_menor
-        self.altura = altura
-    def calcular_perimetro(self):
-        lado_oblicuo = math.sqrt((self.base_mayor - self.base_menor)**2 + self.altura**2)
-        return self.base_mayor + self.base_menor + 2*lado_oblicuo
-    def calcular_area(self):
-        return 0.5 * (self.base_mayor + self.base_menor) * self.altura
-    def obtener_nombre(self):
-        return "Trapecio"
-
-class TrianguloRectangulo:
-    def __init__(self, base, altura):
-        if base <= 0 or altura <= 0:
-            raise ValueError("Base y altura deben ser positivos")
-        self.base = base
-        self.altura = altura
-    def calcular_perimetro(self):
-        hipotenusa = math.sqrt(self.base**2 + self.altura**2)
-        return self.base + self.altura + hipotenusa
-    def calcular_area(self):
-        return 0.5 * self.base * self.altura
-    def obtener_nombre(self):
-        return "Triángulo Rectángulo"
-
-# Diccionario para facilitar la creación de instancias
-FIGURAS = {
-    "Círculo": {"clase": Circulo, "parametros": ["Radio"]},
-    "Cuadrado": {"clase": Cuadrado, "parametros": ["Lado"]},
-    "Elipse": {"clase": Elipse, "parametros": ["Radio Mayor", "Radio Menor"]},
-    "Paralelogramo": {"clase": Paralelogramo, "parametros": ["Base", "Altura"]},
-    "Rectángulo": {"clase": Rectangulo, "parametros": ["Base", "Altura"]},
-    "Rombo": {"clase": Rombo, "parametros": ["Diagonal Mayor", "Diagonal Menor"]},
-    "Trapecio": {"clase": Trapecio, "parametros": ["Base Mayor", "Base Menor", "Altura"]},
-    "Triángulo Rectángulo": {"clase": TrianguloRectangulo, "parametros": ["Base", "Altura"]},
-}
-
-class Aplicacion(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Calculadora de Figuras Geométricas")
-        self.geometry("400x400")
-        self.resizable(False, False)
-
-        # Selección figura
-        self.lbl_figura = tk.Label(self, text="Seleccione la figura:")
-        self.lbl_figura.pack(pady=5)
-
-        self.figura_var = tk.StringVar()
-        self.figura_combo = ttk.Combobox(self, textvariable=self.figura_var, state="readonly")
-        self.figura_combo['values'] = list(FIGURAS.keys())
-        self.figura_combo.bind("<<ComboboxSelected>>", self.mostrar_campos)
-        self.figura_combo.pack(pady=5)
-
-        # Frame para parámetros
-        self.param_frame = tk.Frame(self)
-        self.param_frame.pack(pady=10)
-
-        self.campos = {}  # Para guardar los campos de entrada
-
-        # Botón calcular
-        self.btn_calcular = tk.Button(self, text="Calcular", command=self.calcular)
-        self.btn_calcular.pack(pady=10)
-
-        # Resultados
-        self.resultado_text = tk.Text(self, height=6, width=40, state="disabled")
-        self.resultado_text.pack(pady=10)
-
-    def mostrar_campos(self, event=None):
-        # Limpiar campos anteriores
-        for widget in self.param_frame.winfo_children():
-            widget.destroy()
-        self.campos.clear()
-
-        figura = self.figura_var.get()
-        if figura:
-            parametros = FIGURAS[figura]["parametros"]
-            for param in parametros:
-                lbl = tk.Label(self.param_frame, text=param + ":")
-                lbl.pack()
-                ent = tk.Entry(self.param_frame)
-                ent.pack()
-                self.campos[param] = ent
-
-    def calcular(self):
-        figura = self.figura_var.get()
-        if not figura:
-            messagebox.showerror("Error", "Seleccione una figura")
+# ------------------- FUNCIÓN DE CÁLCULO -------------------
+def calcular():
+    figura = figura_var.get()
+    try:
+        if figura == "Círculo":
+            r = float(entry1.get())
+            obj = Circulo(r)
+        elif figura == "Cuadrado":
+            l = float(entry1.get())
+            obj = Cuadrado(l)
+        elif figura == "Rectángulo":
+            b = float(entry1.get())
+            h = float(entry2.get())
+            obj = Rectangulo(b, h)
+        elif figura == "Triángulo":
+            l = float(entry1.get())
+            obj = Triangulo(l)
+        elif figura == "Triángulo Rectángulo":
+            c1 = float(entry1.get())
+            c2 = float(entry2.get())
+            obj = TrianguloRectangulo(c1, c2)
+        elif figura == "Rombo":
+            l = float(entry1.get())
+            d1 = float(entry2.get())
+            d2 = float(entry3.get())
+            obj = Rombo(l, d1, d2)
+        elif figura == "Trapecio":
+            bm = float(entry1.get())
+            bm2 = float(entry2.get())
+            h = float(entry3.get())
+            l1 = float(entry4.get())
+            l2 = float(entry5.get())
+            obj = Trapecio(bm, bm2, h, l1, l2)
+        elif figura == "Pentágono":
+            l = float(entry1.get())
+            obj = Pentagono(l)
+        elif figura == "Elipse":
+            a = float(entry1.get())
+            b = float(entry2.get())
+            obj = Elipse(a, b)
+        else:
+            messagebox.showerror("Error", "Selecciona una figura")
             return
-        try:
-            # Obtener valores de entrada
-            valores = []
-            for param in FIGURAS[figura]["parametros"]:
-                val_str = self.campos[param].get()
-                val = float(val_str)
-                valores.append(val)
 
-            # Crear instancia y calcular
-            clase_figura = FIGURAS[figura]["clase"]
-            instancia = clase_figura(*valores)
-            nombre = instancia.obtener_nombre()
-            area = instancia.calcular_area()
-            perimetro = instancia.calcular_perimetro()
+        # Mostrar resultados
+        area = obj.calcular_area()
+        perimetro = obj.calcular_perimetro()
+        resultado_label.config(
+            text=f"{obj.obtener_nombre()}\nÁrea: {area:.2f}\nPerímetro: {perimetro:.2f}"
+        )
 
-            self.resultado_text.config(state="normal")
-            self.resultado_text.delete("1.0", tk.END)
-            self.resultado_text.insert(tk.END, f"Figura: {nombre}\n")
-            self.resultado_text.insert(tk.END, f"Área: {area:.2f}\n")
-            self.resultado_text.insert(tk.END, f"Perímetro: {perimetro:.2f}\n")
-            self.resultado_text.config(state="disabled")
+    except ValueError:
+        messagebox.showerror("Error", "Ingresa valores numéricos válidos")
 
-        except ValueError as e:
-            messagebox.showerror("Error", f"Entrada inválida: {e}")
 
-if __name__ == "__main__":
-    app = Aplicacion()
-    app.mainloop()
+# ------------------- FUNCIÓN PARA MOSTRAR CAMPOS -------------------
+def actualizar_campos(*args):
+    for w in [entry1, entry2, entry3, entry4, entry5,
+              label1, label2, label3, label4, label5]:
+        w.grid_remove()
+
+    fig = figura_var.get()
+    if fig == "Círculo":
+        label1.config(text="Radio:")
+        label1.grid(row=1, column=0)
+        entry1.grid(row=1, column=1)
+    elif fig in ["Cuadrado", "Triángulo", "Pentágono"]:
+        label1.config(text="Lado:")
+        label1.grid(row=1, column=0)
+        entry1.grid(row=1, column=1)
+    elif fig == "Rectángulo":
+        label1.config(text="Base:")
+        label2.config(text="Altura:")
+        label1.grid(row=1, column=0)
+        entry1.grid(row=1, column=1)
+        label2.grid(row=2, column=0)
+        entry2.grid(row=2, column=1)
+    elif fig == "Triángulo Rectángulo":
+        label1.config(text="Cateto 1:")
+        label2.config(text="Cateto 2:")
+        label1.grid(row=1, column=0)
+        entry1.grid(row=1, column=1)
+        label2.grid(row=2, column=0)
+        entry2.grid(row=2, column=1)
+    elif fig == "Rombo":
+        label1.config(text="Lado:")
+        label2.config(text="Diagonal Mayor:")
+        label3.config(text="Diagonal Menor:")
+        label1.grid(row=1, column=0)
+        entry1.grid(row=1, column=1)
+        label2.grid(row=2, column=0)
+        entry2.grid(row=2, column=1)
+        label3.grid(row=3, column=0)
+        entry3.grid(row=3, column=1)
+    elif fig == "Trapecio":
+        label1.config(text="Base Mayor:")
+        label2.config(text="Base Menor:")
+        label3.config(text="Altura:")
+        label4.config(text="Lado 1:")
+        label5.config(text="Lado 2:")
+        label1.grid(row=1, column=0)
+        entry1.grid(row=1, column=1)
+        label2.grid(row=2, column=0)
+        entry2.grid(row=2, column=1)
+        label3.grid(row=3, column=0)
+        entry3.grid(row=3, column=1)
+        label4.grid(row=4, column=0)
+        entry4.grid(row=4, column=1)
+        label5.grid(row=5, column=0)
+        entry5.grid(row=5, column=1)
+    elif fig == "Elipse":
+        label1.config(text="Semieje a:")
+        label2.config(text="Semieje b:")
+        label1.grid(row=1, column=0)
+        entry1.grid(row=1, column=1)
+        label2.grid(row=2, column=0)
+        entry2.grid(row=2, column=1)
+
+
+# ------------------- INTERFAZ PRINCIPAL -------------------
+root = tk.Tk()
+root.title("Calculadora de Figuras")
+
+# Menú desplegable
+figura_var = tk.StringVar()
+figura_var.trace("w", actualizar_campos)
+
+ttk.Label(root, text="Selecciona la figura:").grid(row=0, column=0)
+figura_menu = ttk.Combobox(root, textvariable=figura_var, state="readonly")
+figura_menu["values"] = [
+    "Círculo",
+    "Cuadrado",
+    "Rectángulo",
+    "Triángulo",
+    "Triángulo Rectángulo",
+    "Rombo",
+    "Trapecio",
+    "Pentágono",
+    "Elipse",
+]
+figura_menu.grid(row=0, column=1)
+
+# Entradas y etiquetas
+label1 = ttk.Label(root, text="")
+label2 = ttk.Label(root, text="")
+label3 = ttk.Label(root, text="")
+label4 = ttk.Label(root, text="")
+label5 = ttk.Label(root, text="")
+
+entry1 = ttk.Entry(root)
+entry2 = ttk.Entry(root)
+entry3 = ttk.Entry(root)
+entry4 = ttk.Entry(root)
+entry5 = ttk.Entry(root)
+
+# Botón calcular
+calc_btn = ttk.Button(root, text="Calcular", command=calcular)
+calc_btn.grid(row=6, column=0, columnspan=2, pady=10)
+
+# Resultado
+resultado_label = ttk.Label(root, text="", font=("Arial", 12))
+resultado_label.grid(row=7, column=0, columnspan=2)
+
+# Iniciar ventana
+root.mainloop()
