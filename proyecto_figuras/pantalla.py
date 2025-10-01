@@ -1,123 +1,117 @@
 #Aqui desarrollara la implementacion de las clases de figuras
 #En una interfaz grafica en tkinder
-from abc import ABC, abstractmethod
+# Aquí se desarrolla la implementación de las clases de figuras
+# en una interfaz gráfica usando Tkinter
 
-class Figura(ABC):
-    @abstractmethod
-    def calcular_perimetro(self) -> float:
-        pass
-
-    @abstractmethod
-    def calcular_area(self) -> float:
-        pass
-
-    @abstractmethod
-    def obtener_nombre(self) -> str:
-        pass
+# interfaz_tkinter.py
 import tkinter as tk
-from tkinter import messagebox
-import math
+from tkinter import ttk, messagebox
 
-# ---------------- Clases de figuras ----------------
-class Circulo:
-    def __init__(self, radio):
-        self.radio = radio
-    def calcular_perimetro(self): return 2*math.pi*self.radio
-    def calcular_area(self): return math.pi*self.radio**2
- 
-class Cuadrado:
-    def __init__(self, lado):
-        self.lado = lado
-    def calcular_perimetro(self): return 4*self.lado
-    def calcular_area(self): return self.lado**2
+from figuras.circulo import Circulo
+from figuras.cuadrado import Cuadrado
+from figuras.rectangulo import Rectangulo
+from figuras.triangulo import Triangulo
+from figuras.rombo import Rombo
+from figuras.romboide import Romboide
+from figuras.trapecio import Trapecio
+from figuras.pentagono import Pentagono
+from figuras.hexagono import Hexagono
+from figuras.octagono import Octagono
 
-class Rectangulo:
-    def __init__(self, base, altura):
-        self.base = base
-        self.altura = altura
-    def calcular_perimetro(self): return 2*(self.base+self.altura)
-    def calcular_area(self): return self.base*self.altura
 
-class Triangulo:
-    def __init__(self, base, altura, lado1, lado2):
-        self.base, self.altura, self.lado1, self.lado2 = base, altura, lado1, lado2
-    def calcular_perimetro(self): return self.base+self.lado1+self.lado2
-    def calcular_area(self): return (self.base*self.altura)/2
 
-class Rombo:
-    def __init__(self, d_mayor, d_menor, lado):
-        self.d_mayor, self.d_menor, self.lado = d_mayor, d_menor, lado
-    def calcular_perimetro(self): return 4*self.lado
-    def calcular_area(self): return (self.d_mayor*self.d_menor)/2
+class InterfazFiguras:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Calculadora de Figuras Geométricas")
 
-class Trapecio:
-    def __init__(self, b_mayor, b_menor, altura, lado1, lado2):
-        self.b_mayor, self.b_menor, self.altura, self.lado1, self.lado2 = b_mayor, b_menor, altura, lado1, lado2
-    def calcular_perimetro(self): return self.b_mayor+self.b_menor+self.lado1+self.lado2
-    def calcular_area(self): return ((self.b_mayor+self.b_menor)*self.altura)/2
+        self.figura_actual = tk.StringVar()
+        self.entradas = {}
 
-class Pentagono:
-    def __init__(self, lado, apotema):
-        self.lado, self.apotema = lado, apotema
-    def calcular_perimetro(self): return 5*self.lado
-    def calcular_area(self): return (self.calcular_perimetro()*self.apotema)/2
+        # Lista de figuras
+        self.figuras = {
+            "Círculo": (Circulo, ["radio"]),
+            "Cuadrado": (Cuadrado, ["lado"]),
+            "Triangulo": (Triangulo, ["Base", "altura"]),
+            "Rectángulo": (Rectangulo, ["base", "altura"]),
+            "Rombo": (Rombo, ["diagonal_mayor", "diagonal_menor", "lado"]),
+            "Romboide": (Romboide, ["base", "altura", "lado"]),
+            "Trapecio": (Trapecio, ["base_mayor", "base_menor", "altura", "lado1", "lado2"]),
+            "Pentágono": (Pentagono, ["lado"]),
+            "Hexágono": (Hexagono, ["lado"]),  
+            "Octágono": (Octagono, ["lado"]),
+        }
 
-class Hexagono:
-    def __init__(self, lado, apotema):
-        self.lado, self.apotema = lado, apotema
-    def calcular_perimetro(self): return 6*self.lado
-    def calcular_area(self): return (self.calcular_perimetro()*self.apotema)/2
+        self.crear_widgets()
 
-class Heptagono:
-    def __init__(self, lado, apotema):
-        self.lado, self.apotema = lado, apotema
-    def calcular_perimetro(self): return 7*self.lado
-    def calcular_area(self): return (self.calcular_perimetro()*self.apotema)/2
+    def crear_widgets(self):
+        ttk.Label(self.root, text="Selecciona una figura:").pack(pady=5)
 
-class Octagono:
-    def __init__(self, lado, apotema):
-        self.lado, self.apotema = lado, apotema
-    def calcular_perimetro(self): return 8*self.lado
-    def calcular_area(self): return (self.calcular_perimetro()*self.apotema)/2
+        figuras_combobox = ttk.Combobox(
+            self.root, textvariable=self.figura_actual,
+            values=list(self.figuras.keys()), state="readonly"
+        )
+        figuras_combobox.pack(pady=5)
+        figuras_combobox.bind("<<ComboboxSelected>>", self.actualizar_campos)
 
-# ---------------- Función genérica para crear ventana de figura ----------------
-def crear_ventana(titulo, parametros, clase):
-    def calcular():
+        self.campos_frame = ttk.Frame(self.root)
+        self.campos_frame.pack(pady=10)
+
+        self.boton_calcular = ttk.Button(
+            self.root, text="Calcular", command=self.calcular
+        )
+        self.boton_calcular.pack(pady=10)
+
+        self.resultado_label = ttk.Label(self.root, text="")
+        self.resultado_label.pack(pady=10)
+
+    def actualizar_campos(self, event=None):
+        for widget in self.campos_frame.winfo_children():
+            widget.destroy()
+
+        self.entradas.clear()
+        figura = self.figura_actual.get()
+        _, campos = self.figuras[figura]
+
+        for campo in campos:
+            label = ttk.Label(self.campos_frame, text=f"{campo.capitalize()}:")
+            label.pack()
+            entrada = ttk.Entry(self.campos_frame)
+            entrada.pack()
+            self.entradas[campo] = entrada
+
+    def calcular(self):
+        figura_nombre = self.figura_actual.get()
+        if not figura_nombre:
+            messagebox.showerror("Error", "Selecciona una figura.")
+            return
+
+        clase_figura, campos = self.figuras[figura_nombre]
+
         try:
-            valores = [float(e.get()) for e in entradas]
-            if any(v<=0 for v in valores): raise ValueError
-            fig = clase(*valores)
-            resultado.set(f"Perímetro: {fig.calcular_perimetro():.2f}\nÁrea: {fig.calcular_area():.2f}")
-        except:
-            messagebox.showerror("Error","Ingresa solo números positivos válidos")
-    
-    win = tk.Toplevel()
-    win.title(titulo)
-    entradas = []
-    for param in parametros:
-        tk.Label(win,text=param+":").pack()
-        e = tk.Entry(win)
-        e.pack()
-        entradas.append(e)
-    tk.Button(win,text="Calcular",command=calcular).pack(pady=5)
-    resultado = tk.StringVar()
-    tk.Label(win,textvariable=resultado).pack()
+            valores = []
+            for campo in campos:
+                entrada_texto = self.entradas[campo].get()
+                valor = float(entrada_texto)
+                if valor <= 0:
+                    raise ValueError
+                valores.append(valor)
 
-# ---------------- Ventana principal ----------------
-ventana = tk.Tk()
-ventana.title("Figuras Geométricas")
-ventana.geometry("300x600")
+            figura = clase_figura(*valores)
+            area = figura.calcular_area()
+            perimetro = figura.calcular_perimetro()
 
-# Botones para cada figura
-tk.Button(ventana,text="Círculo", command=lambda: crear_ventana("Círculo", ["Radio"], Circulo)).pack(pady=5)
-tk.Button(ventana,text="Cuadrado", command=lambda: crear_ventana("Cuadrado", ["Lado"], Cuadrado)).pack(pady=5)
-tk.Button(ventana,text="Rectángulo", command=lambda: crear_ventana("Rectángulo", ["Base","Altura"], Rectangulo)).pack(pady=5)
-tk.Button(ventana,text="Triángulo", command=lambda: crear_ventana("Triángulo", ["Base","Altura","Lado1","Lado2"], Triangulo)).pack(pady=5)
-tk.Button(ventana,text="Rombo", command=lambda: crear_ventana("Rombo", ["Diagonal mayor","Diagonal menor","Lado"], Rombo)).pack(pady=5)
-tk.Button(ventana,text="Trapecio", command=lambda: crear_ventana("Trapecio", ["Base mayor","Base menor","Altura","Lado1","Lado2"], Trapecio)).pack(pady=5)
-tk.Button(ventana,text="Pentágono", command=lambda: crear_ventana("Pentágono", ["Lado","Apotema"], Pentagono)).pack(pady=5)
-tk.Button(ventana,text="Hexágono", command=lambda: crear_ventana("Hexágono", ["Lado","Apotema"], Hexagono)).pack(pady=5)
-tk.Button(ventana,text="Heptágono", command=lambda: crear_ventana("Heptágono", ["Lado","Apotema"], Heptagono)).pack(pady=5)
-tk.Button(ventana,text="Octágono", command=lambda: crear_ventana("Octágono", ["Lado","Apotema"], Octagono)).pack(pady=5)
+            self.resultado_label.config(
+                text=f"Área: {area:.2f} | Perímetro: {perimetro:.2f}"
+            )
 
-ventana.mainloop()
+        except ValueError:
+            messagebox.showerror("Error", "Todos los valores deben ser numéricos y positivos.")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = InterfazFiguras(root)
+    root.mainloop()
