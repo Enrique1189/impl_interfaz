@@ -1,9 +1,10 @@
-# figuras/circulo.py
+#Aqui desarrollara la implementacion de las clases de figuras
+#En una interfaz grafica en tkinder
 import math
-from interfaces.figura import Figura
+from interfaces.figura import Figura # Asumiendo la existencia de esta interfaz/clase base
 
 class Circulo(Figura):
-    def __init__(self, radio: float):
+    def _init_(self, radio: float):
         if radio <= 0:
             raise ValueError("El radio debe ser un valor positivo.")
         self.radio = radio
